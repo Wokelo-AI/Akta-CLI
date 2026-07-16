@@ -3,6 +3,14 @@
 All notable changes to the Akta CLI are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.2.2]
+
+### Changed
+- The `X-Client-Source` request header now carries the CLI version
+  (`AKTA-CLI/<version>`, e.g. `AKTA-CLI/0.2.2`) instead of a bare `AKTA-CLI`, so
+  backend traffic can be version-tracked, not just attributed to the CLI. The
+  value is single-sourced from `akta_cli.__version__`.
+
 ## [0.2.1]
 
 ### Changed
