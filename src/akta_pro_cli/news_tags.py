@@ -1,4 +1,4 @@
-"""Akta news-type taxonomy — a static snapshot of the published `news-tags.csv`.
+"""akta.pro news-type taxonomy — a static snapshot of the published `news-tags.csv`.
 
 Kept in the CLI so the package is fully independent of the MCP. The MCP has its
 own copy (`akta_mcp/tools/news_tags.py`); keep both in sync if the CSV changes:

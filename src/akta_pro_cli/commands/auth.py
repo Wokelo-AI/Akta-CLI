@@ -1,7 +1,7 @@
-"""`akta login` / `logout` / `whoami` — API-key credential management (v1).
+"""`akta-pro login` / `logout` / `whoami` — API-key credential management (v1).
 
-Browser OAuth (`akta login` without a key) is planned for a later version and
-depends on the Akta backend exposing a public/native OAuth client; today the
+Browser OAuth (`akta-pro login` without a key) is planned for a later version and
+depends on the akta.pro backend exposing a public/native OAuth client; today the
 CLI authenticates with an `x-api-key` minted at https://playground.akta.pro.
 """
 
@@ -12,10 +12,15 @@ from typing import Annotated
 import httpx
 import typer
 
-from akta_cli.client import AktaAPIError, AktaClient
-from akta_cli.config import clear_credentials, credentials_path, save_credentials, stored_api_key
-from akta_cli.console import err, out
-from akta_cli.runtime import EXIT_AUTH, EXIT_BAD_INPUT, AppContext, resolve_base_url
+from akta_pro_cli.client import AktaAPIError, AktaClient
+from akta_pro_cli.config import (
+    clear_credentials,
+    credentials_path,
+    save_credentials,
+    stored_api_key,
+)
+from akta_pro_cli.console import err, out
+from akta_pro_cli.runtime import EXIT_AUTH, EXIT_BAD_INPUT, AppContext, resolve_base_url
 
 
 def _validate_key(base_url: str, key: str) -> tuple[bool, str]:
@@ -29,7 +34,7 @@ def _validate_key(base_url: str, key: str) -> tuple[bool, str]:
             return False, f"key rejected ({exc.status_code})"
         return True, f"could not fully verify (error {exc.status_code}), key stored anyway"
     except httpx.HTTPError as exc:
-        return True, f"could not reach Akta to verify ({exc})"
+        return True, f"could not reach akta.pro to verify ({exc})"
     finally:
         client.close()
 
@@ -38,19 +43,19 @@ def login(
     ctx: typer.Context,
     api_key: Annotated[
         str | None,
-        typer.Option("--api-key", help="Akta API key (wk_...). Omit to be prompted.", show_default=False),
+        typer.Option("--api-key", help="akta.pro API key (wk_...). Omit to be prompted.", show_default=False),
     ] = None,
     base_url: Annotated[
         str | None,
         typer.Option("--base-url", help="API base URL to log into (persisted). Defaults to --base-url/env or api.akta.pro.", show_default=False),
     ] = None,
 ) -> None:
-    """Store an Akta API key for future commands.
+    """Store an akta.pro API key for future commands.
 
     Get a key at https://playground.akta.pro (sign up → API Keys). Passing only
     `--base-url` (no `--api-key`) keeps your already-stored key and just changes
     the endpoint — no re-prompt. To change only the base URL later you can also
-    use `akta config base-url <url>`.
+    use `akta-pro config base-url <url>`.
     """
     cfg: AppContext = ctx.obj
     key = (api_key or cfg.api_key or "").strip()
@@ -60,7 +65,7 @@ def login(
             # Only changing the base URL — keep the stored key, don't re-prompt.
             key = stored
         else:
-            key = typer.prompt("Paste your Akta API key (wk_...)", hide_input=True).strip()
+            key = typer.prompt("Paste your akta.pro API key (wk_...)", hide_input=True).strip()
     if not key:
         err.print("[red]No key provided.[/]")
         raise typer.Exit(code=EXIT_BAD_INPUT)
@@ -77,7 +82,7 @@ def login(
 
 
 def logout(ctx: typer.Context) -> None:
-    """Remove the stored Akta API key."""
+    """Remove the stored akta.pro API key."""
     if clear_credentials():
         err.print(f"[green]✓[/] Removed stored credentials ({credentials_path()}).")
     else:
@@ -88,13 +93,13 @@ def whoami(ctx: typer.Context) -> None:
     """Show the active API key (masked), its source, and validate it."""
     cfg: AppContext = ctx.obj
     if cfg.api_key:
-        source, key = "flag / AKTA_API_KEY", cfg.api_key
+        source, key = "flag / AKTA_PRO_API_KEY", cfg.api_key
     else:
         key = stored_api_key()
         source = f"stored ({credentials_path()})" if key else None
 
     if not key:
-        err.print("[yellow]Not logged in.[/] Run [bold]akta login[/] or set AKTA_API_KEY.")
+        err.print("[yellow]Not logged in.[/] Run [bold]akta-pro login[/] or set AKTA_PRO_API_KEY.")
         raise typer.Exit(code=EXIT_AUTH)
 
     base_url = resolve_base_url(cfg)

@@ -2,7 +2,7 @@
 
 All require Subscription/Enterprise access; Pay-as-you-go returns 403.
 `headcount`/`traffic`/`jobs`/`posts` register at the top level; employee and
-product reviews live under the `akta reviews` group.
+product reviews live under the `akta-pro reviews` group.
 """
 
 from __future__ import annotations
@@ -11,8 +11,8 @@ from typing import Annotated
 
 import typer
 
-from akta_cli.options import CompanyArg, JsonOpt, LimitOpt, OffsetOpt, OutOpt
-from akta_cli.runtime import emit, fetch
+from akta_pro_cli.options import CompanyArg, JsonOpt, LimitOpt, OffsetOpt, OutOpt
+from akta_pro_cli.runtime import emit, fetch
 
 reviews_app = typer.Typer(
     no_args_is_help=True,

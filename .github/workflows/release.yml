@@ -20,11 +20,11 @@ jobs:
           python-version: "3.12"
       - name: Verify tag matches package version
         run: |
-          pkg=$(python -c "import sys; sys.path.insert(0, 'src'); import akta_cli; print(akta_cli.__version__)")
+          pkg=$(python -c "import sys; sys.path.insert(0, 'src'); import akta_pro_cli; print(akta_pro_cli.__version__)")
           tag="${GITHUB_REF_NAME#v}"
           echo "package __version__=$pkg  tag=$tag"
           if [ "$pkg" != "$tag" ]; then
-            echo "::error::tag v$tag does not match __version__ ($pkg) — bump src/akta_cli/__init__.py"
+            echo "::error::tag v$tag does not match __version__ ($pkg) — bump src/akta_pro_cli/__init__.py"
             exit 1
           fi
       - name: Build wheel + sdist

@@ -1,22 +1,22 @@
 """Update checking for the CLI.
 
-Discovers the latest released version via `git ls-remote --tags` on the repo —
-which reuses the user's existing git credentials, so it works for the private
-repo with no GitHub API token. Results are cached in the config dir so
-`akta --version` can show a hint without hitting the network on every call.
+Discovers the latest released version from PyPI (the `akta-pro-cli` project's
+JSON API). Results are cached in the config dir so `akta-pro --version` can show
+a hint without hitting the network on every call.
 """
 
 from __future__ import annotations
 
 import json
-import subprocess
 import time
+import urllib.request
 from pathlib import Path
 
-from akta_cli.config import config_dir
+from akta_pro_cli.config import config_dir
 
-REPO = "Wokelo-AI/Akta-CLI"
-REPO_URL = f"https://github.com/{REPO}"
+PACKAGE = "akta-pro-cli"
+PYPI_URL = f"https://pypi.org/pypi/{PACKAGE}/json"
+PROJECT_URL = f"https://pypi.org/project/{PACKAGE}/"
 _CACHE_TTL = 24 * 3600  # re-check at most once a day for the --version hint
 
 
@@ -42,35 +42,22 @@ def is_newer(latest: str, current: str) -> bool:
     return parse_version(latest) > parse_version(current)
 
 
-def latest_tag(timeout: float = 5.0) -> str | None:
-    """Highest `vX.Y.Z` tag on the remote, without the leading `v`. None on failure."""
+def latest_version(timeout: float = 5.0) -> str | None:
+    """Latest version of the package on PyPI, or None on any failure."""
     try:
-        result = subprocess.run(
-            ["git", "ls-remote", "--tags", "--refs", REPO_URL],
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            check=True,
-        )
-    except (subprocess.SubprocessError, OSError):
+        with urllib.request.urlopen(PYPI_URL, timeout=timeout) as resp:  # noqa: S310 (https only)
+            data = json.load(resp)
+        version = data.get("info", {}).get("version")
+        return version or None
+    except (OSError, ValueError):
         return None
-    versions = []
-    for line in result.stdout.splitlines():
-        if "refs/tags/" not in line:
-            continue
-        ref = line.rsplit("refs/tags/", 1)[-1].strip()
-        if ref.startswith("v") and ref[1:2].isdigit():
-            versions.append(ref[1:])
-    if not versions:
-        return None
-    return max(versions, key=parse_version)
 
 
 def cached_latest(*, timeout: float = 2.0, ttl: int = _CACHE_TTL, force: bool = False) -> str | None:
     """Latest version string, using a time-boxed cache. Best-effort; None on failure.
 
-    With `force`, always re-checks (used by `akta update`). Otherwise reads the
-    cache and only re-checks once `ttl` has elapsed (used by the `--version`
+    With `force`, always re-checks (used by `akta-pro update`). Otherwise reads
+    the cache and only re-checks once `ttl` has elapsed (used by the `--version`
     hint, so it stays fast and offline most of the time).
     """
     path = _cache_path()
@@ -82,7 +69,7 @@ def cached_latest(*, timeout: float = 2.0, ttl: int = _CACHE_TTL, force: bool = 
                 return data.get("latest")
         except (OSError, ValueError):
             pass
-    latest = latest_tag(timeout=timeout)
+    latest = latest_version(timeout=timeout)
     if latest is not None:
         try:
             path.parent.mkdir(parents=True, exist_ok=True)

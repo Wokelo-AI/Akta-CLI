@@ -1,4 +1,4 @@
-"""`akta config` — view and change stored settings without re-entering the key."""
+"""`akta-pro config` — view and change stored settings without re-entering the key."""
 
 from __future__ import annotations
 
@@ -6,10 +6,10 @@ from typing import Annotated
 
 import typer
 
-from akta_cli.client import DEFAULT_BASE_URL
-from akta_cli.config import credentials_path, load_credentials, save_credentials
-from akta_cli.console import err, out
-from akta_cli.runtime import EXIT_BAD_INPUT
+from akta_pro_cli.client import DEFAULT_BASE_URL
+from akta_pro_cli.config import credentials_path, load_credentials, save_credentials
+from akta_pro_cli.console import err, out
+from akta_pro_cli.runtime import EXIT_BAD_INPUT
 
 config_app = typer.Typer(no_args_is_help=True, help="View or change stored settings (offline).")
 

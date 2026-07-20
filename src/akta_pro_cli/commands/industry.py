@@ -1,4 +1,4 @@
-"""`akta industry` — resolve free-text industries to Akta codes."""
+"""`akta-pro industry` — resolve free-text industries to akta.pro codes."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ from typing import Annotated
 import typer
 from rich.table import Table
 
-from akta_cli.options import JsonOpt, OutOpt
-from akta_cli.runtime import emit, fetch
+from akta_pro_cli.options import JsonOpt, OutOpt
+from akta_pro_cli.runtime import emit, fetch
 
 app = typer.Typer(no_args_is_help=True, help="Industry search.")
 
@@ -38,9 +38,9 @@ def search(
     json_out: JsonOpt = False,
     output: OutOpt = None,
 ) -> None:
-    """Resolve a free-text industry to Akta industry codes (free).
+    """Resolve a free-text industry to akta.pro industry codes (free).
 
-    Use the returned `code` values as `--industry` in `akta news`.
+    Use the returned `code` values as `--industry` in `akta-pro news`.
     """
     result = fetch(ctx.obj, "/industry/search", {"query": query})
     emit(ctx.obj, result, json_out=json_out, output=output, renderer=_industry_table)

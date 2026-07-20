@@ -1,4 +1,4 @@
-"""Shared request/render plumbing for the Akta CLI.
+"""Shared request/render plumbing for the akta.pro CLI.
 
 - `AppContext` holds the resolved global options (set on `ctx.obj` by the root
   callback).
@@ -20,9 +20,9 @@ import httpx
 import typer
 from rich.markdown import Markdown
 
-from akta_cli.client import DEFAULT_BASE_URL, AktaAPIError, AktaClient
-from akta_cli.config import stored_api_key, stored_base_url
-from akta_cli.console import err, out
+from akta_pro_cli.client import DEFAULT_BASE_URL, AktaAPIError, AktaClient
+from akta_pro_cli.config import stored_api_key, stored_base_url
+from akta_pro_cli.console import err, out
 
 # Exit codes (common CLI convention).
 EXIT_BAD_INPUT = 2
@@ -34,17 +34,17 @@ EXIT_TIMEOUT = 5
 @dataclass
 class AppContext:
     api_key: str | None
-    base_url: str | None  # from --base-url / AKTA_API_BASE_URL; None if unset
+    base_url: str | None  # from --base-url / AKTA_PRO_API_BASE_URL; None if unset
     quiet: bool
     timeout: float = 30.0
 
 
 def resolve_base_url(ctx: AppContext) -> str:
-    """Effective base URL: explicit flag/env → stored (from `akta login`) → default.
+    """Effective base URL: explicit flag/env → stored (from `akta-pro login`) → default.
 
     Lets local testing target a dev backend either per-command
-    (`--base-url http://localhost:8000/api/v1` or the AKTA_API_BASE_URL env) or
-    persistently (`akta login --base-url …`, then every command follows).
+    (`--base-url http://localhost:8000/api/v1` or the AKTA_PRO_API_BASE_URL env) or
+    persistently (`akta-pro login --base-url …`, then every command follows).
     """
     return ctx.base_url or stored_base_url() or DEFAULT_BASE_URL
 
@@ -53,9 +53,9 @@ def resolve_api_key(ctx: AppContext) -> str:
     key = ctx.api_key or stored_api_key()
     if not key:
         err.print(
-            "[red]No Akta API key found.[/]\n"
-            "Provide one with [bold]--api-key[/], the [bold]AKTA_API_KEY[/] env var, "
-            "or run [bold]akta login[/].\n"
+            "[red]No akta.pro API key found.[/]\n"
+            "Provide one with [bold]--api-key[/], the [bold]AKTA_PRO_API_KEY[/] env var, "
+            "or run [bold]akta-pro login[/].\n"
             "Get a key at https://playground.akta.pro (API Keys)."
         )
         raise typer.Exit(code=EXIT_AUTH)

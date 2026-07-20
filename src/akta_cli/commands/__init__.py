@@ -1,1 +1,0 @@
-"""Akta CLI command modules."""

@@ -1,8 +1,8 @@
-"""Local credential + config storage for the Akta CLI.
+"""Local credential + config storage for the akta.pro CLI.
 
 Credentials live in a JSON file under the user's config dir
-(`$XDG_CONFIG_HOME/akta` or `~/.config/akta` on Unix, `%APPDATA%\\akta` on
-Windows), written 0600. Only the API key path is used in v1.
+(`$XDG_CONFIG_HOME/akta-pro` or `~/.config/akta-pro` on Unix, `%APPDATA%\\akta-pro`
+on Windows), written 0600. Only the API key path is used in v1.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import os
 import stat
 from pathlib import Path
 
-APP_NAME = "akta"
+APP_NAME = "akta-pro"
 
 
 def config_dir() -> Path:

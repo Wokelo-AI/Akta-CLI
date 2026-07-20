@@ -1,9 +1,9 @@
-"""Tests for the `akta` CLI (src/akta_cli).
+"""Tests for the `akta-pro` CLI (src/akta_pro_cli).
 
 Self-contained and network-free: drives the real Typer app via CliRunner with
 the HTTP layer mocked by respx. Run just these with:
 
-    pytest tests/test_akta_cli.py
+    pytest tests/test_akta_pro_cli.py
 
 (The rest of tests/ is stale template debris — see tests/CLAUDE.md.)
 """
@@ -14,10 +14,10 @@ import httpx
 import respx
 from typer.testing import CliRunner
 
-from akta_cli import __version__
-from akta_cli import update as _upd
-from akta_cli.app import app
-from akta_cli.config import load_credentials, save_credentials
+from akta_pro_cli import __version__
+from akta_pro_cli import update as _upd
+from akta_pro_cli.app import app
+from akta_pro_cli.config import load_credentials, save_credentials
 
 runner = CliRunner()
 BASE = "https://api.akta.pro/api/v1"
@@ -27,7 +27,7 @@ BASE = "https://api.akta.pro/api/v1"
 
 def test_no_key_exits_3(tmp_path):
     res = runner.invoke(app, ["company", "search", "Canva"],
-                        env={"XDG_CONFIG_HOME": str(tmp_path), "AKTA_API_KEY": ""})
+                        env={"XDG_CONFIG_HOME": str(tmp_path), "AKTA_PRO_API_KEY": ""})
     assert res.exit_code == 3
 
 
@@ -78,7 +78,7 @@ def test_search_sends_headers_and_query():
     assert '"uuid": "abc-123"' in res.stdout
     req = route.calls.last.request
     assert req.headers.get("x-api-key") == "wk_dummy"
-    assert req.headers.get("x-client-source", "").startswith("AKTA-CLI/")
+    assert req.headers.get("x-client-source", "").startswith("AKTA-PRO-CLI/")
     assert req.url.params.get("query") == "Canva"
 
 
@@ -148,7 +148,7 @@ def _render(renderable) -> str:
 
 
 def test_news_detail_reader_shows_body():
-    from akta_cli.commands.news import _detail_view
+    from akta_pro_cli.commands.news import _detail_view
     view = _detail_view({"data": [{"id": 7, "title": "T", "publisher": "Reuters",
                                    "full_text": "THE FULL ARTICLE BODY.", "url": "http://x"}]})
     text = _render(view)
@@ -157,7 +157,7 @@ def test_news_detail_reader_shows_body():
 
 
 def test_news_detail_reader_falls_back_when_body_empty():
-    from akta_cli.commands.news import _detail_view
+    from akta_pro_cli.commands.news import _detail_view
     view = _detail_view({"data": [{"id": 7, "title": "T", "full_text": "",
                                    "ai_summary": "SHORT SUMMARY", "url": "http://src"}]})
     text = _render(view)
@@ -301,22 +301,22 @@ def test_version_parsing_and_is_newer():
 
 
 def test_update_up_to_date(tmp_path, monkeypatch):
-    monkeypatch.setattr("akta_cli.update.latest_tag", lambda timeout=5.0: __version__)
+    monkeypatch.setattr("akta_pro_cli.update.latest_version", lambda timeout=5.0: __version__)
     res = runner.invoke(app, ["update"], env={"XDG_CONFIG_HOME": str(tmp_path)})
     assert res.exit_code == 0
     assert "up to date" in res.stdout
 
 
 def test_update_available_check_only(tmp_path, monkeypatch):
-    monkeypatch.setattr("akta_cli.update.latest_tag", lambda timeout=5.0: "99.0.0")
+    monkeypatch.setattr("akta_pro_cli.update.latest_version", lambda timeout=5.0: "99.0.0")
     res = runner.invoke(app, ["update", "--check"], env={"XDG_CONFIG_HOME": str(tmp_path)})
     assert res.exit_code == 0
     assert "Update available" in res.stdout
-    assert "pipx install --force" in res.stdout  # shows the command, does not run it
+    assert "pipx upgrade" in res.stdout  # shows the command, does not run it
 
 
 def test_update_unreachable_exits_4(tmp_path, monkeypatch):
-    monkeypatch.setattr("akta_cli.update.latest_tag", lambda timeout=5.0: None)
+    monkeypatch.setattr("akta_pro_cli.update.latest_version", lambda timeout=5.0: None)
     res = runner.invoke(app, ["update"], env={"XDG_CONFIG_HOME": str(tmp_path)})
     assert res.exit_code == 4
 
@@ -368,7 +368,7 @@ def test_login_stores_credentials_json(tmp_path):
     res = runner.invoke(app, ["login", "--api-key", "wk_test", "--base-url", "http://local.test/api/v1"],
                         env={"XDG_CONFIG_HOME": str(tmp_path)})
     assert res.exit_code == 0
-    cred = tmp_path / "akta" / "credentials.json"
+    cred = tmp_path / "akta-pro" / "credentials.json"
     assert cred.exists()
     data = json.loads(cred.read_text())
     assert data == {"api_key": "wk_test", "base_url": "http://local.test/api/v1"}

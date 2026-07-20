@@ -1,12 +1,12 @@
 [project]
-name = "akta-cli"
-description = "Command-line client for the Akta API (api.akta.pro)"
+name = "akta-pro-cli"
+description = "Command-line client for the akta.pro API (api.akta.pro)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Wokelo", email = "support@wokelo.ai" }]
 maintainers = [{ name = "Wokelo", email = "support@wokelo.ai" }]
-keywords = ["akta", "cli", "company-intelligence", "market-intelligence"]
+keywords = ["akta-pro", "akta.pro", "cli", "company-intelligence", "market-intelligence"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Environment :: Console",
@@ -31,10 +31,10 @@ dev = [
 
 [project.urls]
 Homepage = "https://akta.pro/"
-Repository = "https://github.com/Wokelo-AI/Akta-CLI"
+Repository = "https://github.com/Wokelo-AI/akta-pro-cli"
 
 [project.scripts]
-akta = "akta_cli.__main__:main"
+akta-pro = "akta_pro_cli.__main__:main"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -44,7 +44,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.dynamic]
-version = { attr = "akta_cli.__version__" }
+version = { attr = "akta_pro_cli.__version__" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

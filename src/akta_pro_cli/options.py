@@ -7,7 +7,7 @@ from typing import Annotated
 
 import typer
 
-CompanyArg = Annotated[str, typer.Argument(help="Company website (e.g. 'canva.com') or Akta UUID.")]
+CompanyArg = Annotated[str, typer.Argument(help="Company website (e.g. 'canva.com') or akta.pro UUID.")]
 
 JsonOpt = Annotated[bool, typer.Option("--json", help="Emit raw JSON to stdout (clean for pipes).")]
 

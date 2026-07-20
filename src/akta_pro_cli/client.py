@@ -1,4 +1,4 @@
-"""Standalone synchronous HTTP client for the Akta REST API.
+"""Standalone synchronous HTTP client for the akta.pro REST API.
 
 Deliberately self-contained (no dependency on `akta_mcp.*`): the server's
 `AktaClient` reads its key from a request-scoped ContextVar set by the OAuth
@@ -17,11 +17,11 @@ DEFAULT_BASE_URL = "https://api.akta.pro/api/v1"
 
 # Sent on every request so the backend can distinguish (and version-track) CLI
 # traffic. Mirrors the MCP's `X-Client-Source: AKTA-MCP`.
-CLIENT_SOURCE = f"AKTA-CLI/{__version__}"
+CLIENT_SOURCE = f"AKTA-PRO-CLI/{__version__}"
 
 
 class AktaAPIError(RuntimeError):
-    """An HTTP error from the Akta API, preserving the status code and body."""
+    """An HTTP error from the akta.pro API, preserving the status code and body."""
 
     def __init__(self, message: str, *, status_code: int, body: dict | None = None):
         super().__init__(message)
@@ -31,7 +31,7 @@ class AktaAPIError(RuntimeError):
 
 _ERROR_MESSAGES = {
     400: "Bad request — check the parameters.",
-    401: "Authentication failed. Check your API key (`akta login`).",
+    401: "Authentication failed. Check your API key (`akta-pro login`).",
     403: (
         "Access denied — your plan or credit balance does not cover this data "
         "(alternative signals require Subscription/Enterprise; Funding and M&A "
@@ -39,9 +39,9 @@ _ERROR_MESSAGES = {
     ),
     404: "Not found.",
     429: "Rate limit exceeded. Retry with backoff.",
-    500: "Akta server error. Please try again later.",
-    502: "Akta service unavailable. Please retry.",
-    503: "Akta service unavailable. Please retry.",
+    500: "akta.pro server error. Please try again later.",
+    502: "akta.pro service unavailable. Please retry.",
+    503: "akta.pro service unavailable. Please retry.",
 }
 
 
@@ -69,7 +69,7 @@ class AktaClient:
 
     def __init__(self, base_url: str, api_key: str, timeout: float = 30.0):
         self._api_key = api_key
-        # follow_redirects: several Akta routes are declared with a trailing slash,
+        # follow_redirects: several akta.pro routes are declared with a trailing slash,
         # so a slashless path 307-redirects to the canonical one. The redirect is
         # same-origin, so x-api-key is re-sent.
         self._http = httpx.Client(base_url=base_url, timeout=timeout, follow_redirects=True)

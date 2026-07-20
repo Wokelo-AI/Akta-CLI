@@ -1,4 +1,4 @@
-"""`akta news` — signals (list), detail (full bodies), and the type taxonomy."""
+"""`akta-pro news` — signals (list), detail (full bodies), and the type taxonomy."""
 
 from __future__ import annotations
 
@@ -11,10 +11,10 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-from akta_cli.console import err
-from akta_cli.news_tags import NEWS_CATEGORIES, NEWS_TAGS
-from akta_cli.options import JsonOpt, OutOpt
-from akta_cli.runtime import EXIT_BAD_INPUT, emit, fetch
+from akta_pro_cli.console import err
+from akta_pro_cli.news_tags import NEWS_CATEGORIES, NEWS_TAGS
+from akta_pro_cli.options import JsonOpt, OutOpt
+from akta_pro_cli.runtime import EXIT_BAD_INPUT, emit, fetch
 
 app = typer.Typer(no_args_is_help=True, help="News signals, article detail, and the type taxonomy.")
 
@@ -72,13 +72,13 @@ def _signals_table(result: object) -> Table | None:
 @app.command("signals")
 def signals(
     ctx: typer.Context,
-    company: Annotated[str | None, typer.Option("--company", help="Company website or Akta UUID.")] = None,
-    industry: Annotated[str | None, typer.Option("--industry", help="Comma-separated industry codes (from `akta industry search`) — preferred for sector/market topics.")] = None,
+    company: Annotated[str | None, typer.Option("--company", help="Company website or akta.pro UUID.")] = None,
+    industry: Annotated[str | None, typer.Option("--industry", help="Comma-separated industry codes (from `akta-pro industry search`) — preferred for sector/market topics.")] = None,
     query: Annotated[str | None, typer.Option("--query", help="Open-ended topic, e.g. 'crude oil prices' (last resort; prefer --company/--industry).")] = None,
     title: Annotated[str | None, typer.Option("--title", help="Search by text in the article title.")] = None,
     start_date: Annotated[str | None, typer.Option("--start-date", help="Start of range, YYYY-MM-DD. Non-enterprise limited to ~6 months back.")] = None,
     end_date: Annotated[str | None, typer.Option("--end-date", help="End of range, YYYY-MM-DD. Default today.")] = None,
-    type_codes: Annotated[list[str] | None, typer.Option("--type-code", "-t", help="News-type tag code(s) from `akta news types`, e.g. SD01, CM03 (repeatable).")] = None,
+    type_codes: Annotated[list[str] | None, typer.Option("--type-code", "-t", help="News-type tag code(s) from `akta-pro news types`, e.g. SD01, CM03 (repeatable).")] = None,
     sentiment: Annotated[Sentiment, typer.Option("--sentiment", help="Filter by article sentiment.")] = Sentiment.all,
     news_score: Annotated[NewsScore, typer.Option("--news-score", help="Filter by relevance/quality tier.")] = NewsScore.all,
     countries: Annotated[list[str] | None, typer.Option("--country", help="Filter by the event's country — ISO codes, e.g. USA, GBR (repeatable).")] = None,
@@ -102,8 +102,8 @@ def signals(
     --company/--industry/--query/--title (all optional).
 
     The list is compact and never includes article bodies; each result carries an
-    `id` — pass those to `akta news detail` for full text. Cost: 0.1/call +
-    0.01/article. Filter by type with `-t` codes from `akta news types`.
+    `id` — pass those to `akta-pro news detail` for full text. Cost: 0.1/call +
+    0.01/article. Filter by type with `-t` codes from `akta-pro news types`.
     """
     params = {
         "company": company,
@@ -183,7 +183,7 @@ def _detail_view(result: object) -> Group | None:
 @app.command("detail")
 def detail(
     ctx: typer.Context,
-    news_ids: Annotated[list[int], typer.Argument(help="News id(s) from `akta news signals` (max 10).")],
+    news_ids: Annotated[list[int], typer.Argument(help="News id(s) from `akta-pro news signals` (max 10).")],
     json_out: JsonOpt = False,
     output: OutOpt = None,
 ) -> None:
@@ -194,7 +194,7 @@ def detail(
     available. Pass --json for the complete enrichment payload.
     """
     if not news_ids:
-        err.print("[red]Provide at least one news id[/] (from `akta news signals`).")
+        err.print("[red]Provide at least one news id[/] (from `akta-pro news signals`).")
         raise typer.Exit(code=EXIT_BAD_INPUT)
     ids_csv = ",".join(str(i) for i in news_ids[:10])
     result = fetch(ctx.obj, "/news/by-id/", {"news_ids": ids_csv})
@@ -225,7 +225,7 @@ def types(
             categories.append({"category": cat_name, "codes": tags})
     result = {
         "count": len(NEWS_TAGS),
-        "usage": "Pass matching code(s) to `akta news signals --type-code CODE`.",
+        "usage": "Pass matching code(s) to `akta-pro news signals --type-code CODE`.",
         "categories": categories,
     }
     # No network/credits — flat table in a TTY, structured JSON otherwise.

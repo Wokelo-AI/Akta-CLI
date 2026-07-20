@@ -1,4 +1,4 @@
-"""`akta update` — check for a newer release and update the CLI in place."""
+"""`akta-pro update` — check for a newer release and update the CLI in place."""
 
 from __future__ import annotations
 
@@ -8,10 +8,10 @@ from typing import Annotated
 
 import typer
 
-from akta_cli import __version__
-from akta_cli import update as _u
-from akta_cli.console import err, out
-from akta_cli.runtime import EXIT_API
+from akta_pro_cli import __version__
+from akta_pro_cli import update as _u
+from akta_pro_cli.console import err, out
+from akta_pro_cli.runtime import EXIT_API
 
 
 def update(
@@ -20,24 +20,23 @@ def update(
 ) -> None:
     """Check for a newer release and, if found, reinstall it via pipx.
 
-    Discovers the latest version from the repo's git tags (using your existing
-    git credentials), so it works for the private repo without a token.
+    Discovers the latest version from PyPI and upgrades the installed package.
     """
     current = __version__
     latest = _u.cached_latest(timeout=8.0, force=True)
     if latest is None:
         err.print(
-            f"[yellow]Couldn't reach {_u.REPO} to check for updates[/] (network or git auth?). "
+            f"[yellow]Couldn't reach PyPI to check for updates[/] (network?). "
             f"You're on v{current}."
         )
-        err.print(f"See {_u.REPO_URL}/releases, or reinstall a specific tag manually.")
+        err.print(f"See {_u.PROJECT_URL}, or upgrade manually.")
         raise typer.Exit(code=EXIT_API)
 
     if not _u.is_newer(latest, current):
         out.print(f"[green]✓ up to date[/] — v{current} is the latest.")
         return
 
-    cmd = ["pipx", "install", "--force", f"git+{_u.REPO_URL}@v{latest}"]
+    cmd = ["pipx", "upgrade", _u.PACKAGE]
     out.print(f"Update available: [bold]v{current}[/] → [bold green]v{latest}[/]")
 
     if check:

@@ -1,18 +1,18 @@
-"""`akta account` — the caller's plan tier and credit balance."""
+"""`akta-pro account` — the caller's plan tier and credit balance."""
 
 from __future__ import annotations
 
 import typer
 from rich.table import Table
 
-from akta_cli.options import JsonOpt, OutOpt
-from akta_cli.runtime import emit, fetch
+from akta_pro_cli.options import JsonOpt, OutOpt
+from akta_pro_cli.runtime import emit, fetch
 
 
 def _account_table(result: object) -> Table | None:
     if not isinstance(result, dict):
         return None
-    table = Table(title="Akta account", show_header=False)
+    table = Table(title="akta.pro account", show_header=False)
     table.add_column("Field", style="bold")
     table.add_column("Value")
     for key in ("package_type", "is_enterprise", "credit_balance", "currency"):

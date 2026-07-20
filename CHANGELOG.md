@@ -3,6 +3,25 @@
 All notable changes to the Akta CLI are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.3.0]
+
+### Changed
+- **Renamed to akta.pro.** The package is now `akta-pro-cli` (install with
+  `pipx install akta-pro-cli`) and the command is now **`akta-pro`** (was `akta`).
+  Internals moved to the `akta_pro_cli` import package. The request header is now
+  `X-Client-Source: AKTA-PRO-CLI/<version>`.
+- Auth env vars renamed: `AKTA_API_KEY` → **`AKTA_PRO_API_KEY`**,
+  `AKTA_API_BASE_URL` → **`AKTA_PRO_API_BASE_URL`**.
+- Stored credentials moved to `~/.config/akta-pro/` (was `~/.config/akta/`;
+  `%APPDATA%\akta-pro` on Windows). Re-run `akta-pro login` after upgrading.
+- `akta-pro update` now checks PyPI for the latest version and upgrades via
+  `pipx upgrade akta-pro-cli` (previously reinstalled from git tags).
+
+### Migration
+- Uninstall the old package if present (`pipx uninstall akta-cli`), then
+  `pipx install akta-pro-cli`. Update any scripts from `akta …` to `akta-pro …`
+  and any `AKTA_API_*` env vars to `AKTA_PRO_API_*`.
+
 ## [0.2.6]
 
 ### Changed

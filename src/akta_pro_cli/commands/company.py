@@ -1,4 +1,4 @@
-"""`akta company` — search, enrichment (Markdown), and concise overview."""
+"""`akta-pro company` — search, enrichment (Markdown), and concise overview."""
 
 from __future__ import annotations
 
@@ -8,9 +8,9 @@ from typing import Annotated
 import typer
 from rich.table import Table
 
-from akta_cli.console import err
-from akta_cli.options import JsonOpt, OutOpt
-from akta_cli.runtime import EXIT_BAD_INPUT, emit, fetch, probe_is_enterprise
+from akta_pro_cli.console import err
+from akta_pro_cli.options import JsonOpt, OutOpt
+from akta_pro_cli.runtime import EXIT_BAD_INPUT, emit, fetch, probe_is_enterprise
 
 app = typer.Typer(no_args_is_help=True, help="Company search, enrichment, and concise overview.")
 
@@ -38,7 +38,7 @@ class Section(str, Enum):
     mna_and_investment = "mna_and_investment"
 
 
-# Sections the Akta backend gates to Enterprise plans (mirrors the MCP tool).
+# Sections the akta.pro backend gates to Enterprise plans (mirrors the MCP tool).
 ENTERPRISE_SECTIONS = {"funding_detail", "mna_and_investment"}
 
 
@@ -67,7 +67,7 @@ def search(
     json_out: JsonOpt = False,
     output: OutOpt = None,
 ) -> None:
-    """Resolve a company by name or website to its Akta identifiers (free).
+    """Resolve a company by name or website to its akta.pro identifiers (free).
 
     Run this first — every other company command needs the `uuid` (or website)
     returned here.
@@ -79,7 +79,7 @@ def search(
 @app.command("data")
 def data(
     ctx: typer.Context,
-    company: Annotated[str, typer.Argument(help="Company website or Akta UUID.")],
+    company: Annotated[str, typer.Argument(help="Company website or akta.pro UUID.")],
     sections: Annotated[
         list[Section] | None,
         typer.Option("-s", "--section", help="Section(s) to fetch (repeatable). Required — there is no 'all'."),
@@ -175,7 +175,7 @@ def data(
 @app.command("concise")
 def concise(
     ctx: typer.Context,
-    company: Annotated[str, typer.Argument(help="Company website or Akta UUID.")],
+    company: Annotated[str, typer.Argument(help="Company website or akta.pro UUID.")],
     json_out: JsonOpt = False,
     output: OutOpt = None,
 ) -> None:
