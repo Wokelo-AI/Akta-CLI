@@ -3,6 +3,13 @@
 All notable changes to the Akta CLI are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/); versions follow SemVer.
 
+## [0.2.6]
+
+### Changed
+- The alternative-signal commands (headcount, traffic, jobs, posts, reviews) are
+  now available on all plans, including Pay-as-you-go. Docs updated to reflect
+  the broader access.
+
 ## [0.2.5]
 
 ### Changed
