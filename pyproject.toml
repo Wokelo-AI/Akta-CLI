@@ -4,7 +4,8 @@ description = "Command-line client for the Akta API (api.akta.pro)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
-authors = [{ name = "Wokelo AI", email = "engineering@wokelo.ai" }]
+authors = [{ name = "Wokelo", email = "support@wokelo.ai" }]
+maintainers = [{ name = "Wokelo", email = "support@wokelo.ai" }]
 keywords = ["akta", "cli", "company-intelligence", "market-intelligence"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
